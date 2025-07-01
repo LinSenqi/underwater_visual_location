@@ -2,9 +2,17 @@
 # coding:UTF-8
 import serial
 import time
+import threading
+
+from serial import SerialException
+
 
 class HeightSensor:
-    def __init__(self, port="COM15", baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=1):
+    
+    loop = 0
+    connection = False
+    
+    def __init__(self, callback_method,port="COM15", baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=1):
         """
         初始化高度传感器
         :param port: 串口号
@@ -21,7 +29,8 @@ class HeightSensor:
         self.stopbits = stopbits
         self.timeout = timeout
         self.ser = None
-
+        self.callback_method = callback_method
+        self.height = None
     def connect(self):
         """连接串口"""
         try:
@@ -34,21 +43,22 @@ class HeightSensor:
                 timeout=self.timeout
             )
             if self.ser.is_open:
-                print(f"成功打开串口 {self.ser.name}")
-                return True
-            return False
+                #print(f"成功打开串口 {self.ser.name}")
+                self.connection = True
+            
         except Exception as e:
             print(f"串口连接异常: {str(e)}")
-            return False
+            self.connection = False
 
     def read_distance(self):
         """
         读取距离数据
-        :return: 距离值，如果读取失败返回None
+        :return: 距离值,如果读取失败返回None
         """
         if not self.ser or not self.ser.is_open:
             print("串口未连接")
-            return None
+            self.height =  None
+            self.callback_method(self)
 
         try:
             # 发送数据
@@ -65,21 +75,33 @@ class HeightSensor:
                 M_find = response.find('M')
                 if f_find != -1 and M_find != -1:
                     output = response[f_find+2:M_find-1]
-                    distance = float(output)
-                    print(f'The distance is {distance:e} m')
-                    return distance
-            return None
+                    self.height = float(output)
+                    self.callback_method(self)
+                    
+            
         except Exception as e:
             print(f"读取数据异常: {str(e)}")
-            return None
-
+            self.height =  None
+            self.callback_method(self)
+            
     def close(self):
         """关闭串口连接"""
         if self.ser and self.ser.is_open:
             self.ser.close()
             print("串口已关闭")
+            
+    def run(self):
+        """持续读取串口数据并解析距离"""
+        #print("启动连续测量中...")
+        
+        if self.loop == 0:
+            self.loop = 1
+            #print("开始读取距离（Ctrl+C 停止）：")
+            self.t2 = threading.Thread(target=self.read_distance)
+            self.t2.start()
 
 # 使用示例
+'''
 if __name__ == "__main__":
     sensor = HeightSensor()
     if sensor.connect():
@@ -90,3 +112,4 @@ if __name__ == "__main__":
                     print(f"测量距离: {distance:.3f} 米")
         except KeyboardInterrupt:
             sensor.close()
+'''

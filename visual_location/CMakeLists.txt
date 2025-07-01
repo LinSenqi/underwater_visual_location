@@ -75,10 +75,10 @@ find_package(Eigen3 REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+#generate_messages(
+#  DEPENDENCIES
+#  std_msgs
+#)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -143,20 +143,23 @@ include_directories(include ${EIGEN3_INCLUDE_DIR})
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/visual_location_node.cpp)
 add_executable(camera_capture src/camera_capture.cpp)
-add_library(detector src/detector.cpp)
-add_executable(detector_node src/detector_node.cpp)
 
 
 target_link_libraries(camera_capture ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-target_link_libraries(detector ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) 
-target_link_libraries(detector_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} detector)
 
 
-add_dependencies(detector_node ${detector_node_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+#add_dependencies(detector_node ${detector_node_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 catkin_install_python(PROGRAMS 
         scripts/device_model.py
         scripts/IMUrunner.py
+        scripts/height_sensor.py
+        scripts/HEISENrunner.py
+        scripts/laser_sensor.py
+        scripts/LASENrunner.py
+        scripts/detector_node.py
+        scripts/detector_new.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

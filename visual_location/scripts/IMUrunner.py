@@ -28,9 +28,11 @@ data_AngZ = [0,0,0,0,0,0,0,0,0,0]
 data_AsX = [0,0,0,0,0,0,0,0,0,0]
 
 
+
 def updateData(DeviceModel):
     # 获取当前时间戳
     global data_AngX,data_AngY,data_AngZ,data_AsX,data_time
+    global ang_x,ang_y,ang_z,as_x
     current_time = time.time()
     
     # 获取设备的数据
@@ -115,14 +117,42 @@ if __name__ == "__main__":
     
     rate = rospy.Rate(30)
     while not rospy.is_shutdown():
+        ax,ay,az,asx = ang_x,ang_y,ang_z,as_x
+        if not ((ax == None) or (ay == None) or (az == None) or (asx == None)):
+            data_AngX.pop(0)
+            data_AngX.append(ax)
+            
+            data_AngY.pop(0)
+            data_AngY.append(ay)
+                
+            data_AngZ.pop(0)
+            data_AngZ.append(az)
+            
+            data_AsX.pop(0)
+            data_AsX.append(asx)
        
+            
+        
+        else:
+            data_AngX.pop(0)
+            data_AngX.append(data_AngX[8])
+            
+            data_AngY.pop(0)
+            data_AngX.append(data_AngY[8])
+                
+            data_AngZ.pop(0)
+            data_AngX.append(data_AngZ[8])
+            
+            data_AsX.pop(0)
+            data_AngX.append(data_AsX[8])
+        
         imu_msg.x = data_AngX[9]
         imu_msg.y = data_AngY[9]
         imu_msg.z = data_AngZ[9] 
         imu_msg.w = data_AsX[9]
-        
+            
         imu_pub.publish(imu_msg)
-        
+            
         rate.sleep()
         rospy.loginfo("%f,%f,%f,%f",imu_msg.x,imu_msg.y,imu_msg.z,imu_msg.w)
     
