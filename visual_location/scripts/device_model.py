@@ -110,6 +110,7 @@ class DeviceModel:
         # 初始化设备数据字典 Initialize device data dictionary
         self.initial_angle_z = {}  # 存储每个ADDR的初始AngZ值
         self.is_initialized = {}   # 标记每个ADDR是否已初始化
+        self.serial_lock = threading.Lock() 
         for addr in addrLis:
             self.deviceData[addr] = {}
 
@@ -122,7 +123,7 @@ class DeviceModel:
             tempH = (tempL ^ self.auchCRCHi[tempIndex]) & 0xff
             tempL = self.auchCRCLo[tempIndex]
         return (tempH << 8) | tempL
-        pass
+       
 
     # region 获取设备数据 Obtain device data
 

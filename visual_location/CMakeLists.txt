@@ -160,6 +160,11 @@ catkin_install_python(PROGRAMS
         scripts/LASENrunner.py
         scripts/detector_node.py
         scripts/detector_new.py
+        scripts/position.py
+        scripts/PosRunner.py
+        scripts/camera_capture_new.py
+        
+
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

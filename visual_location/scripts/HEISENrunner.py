@@ -10,7 +10,7 @@ import rospy
 
 from std_msgs.msg import Float32
 import height_sensor
-data_height = [0,0,0,0,0,0,0,0,0,0]
+data_height = [None]*10
 Dis = None
 
 def updateData(HeightSensor):
@@ -45,6 +45,7 @@ if __name__ == "__main__":
             else:
                 data_height.pop(0)
                 data_height.append(data_height[8])
+                height_pub.publish(-500)
                 rospy.loginfo("激光测距仪没有返回有价值的信息")
         
     

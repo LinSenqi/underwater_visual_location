@@ -12,24 +12,13 @@ import csv
 import laser_sensor
 from std_msgs.msg import Float32
 
-data_distance = [0,0,0,0,0,0,0,0,0,0]
+data_distance = [None]*10
 Dis = None
 
 def updateData(LaserRangeFinder):
     global Dis
     
     Dis = LaserRangeFinder.get()
-   
-    '''
-    if not (Dis == None):
-        
-        data_distance.pop(0)
-        data_distance.append(Dis)
-        
-    else:
-        data_distance.pop(0)
-        data_distance.append(0)
-    '''
         
 
 if __name__ == "__main__":
@@ -48,16 +37,15 @@ if __name__ == "__main__":
         if d != None:
             data_distance.pop(0)
             data_distance.append(d)
-            
+            laser_msg = data_distance[9]
+            laser_pub.publish(laser_msg)
             rospy.loginfo("%f",d)
         else:
             data_distance.pop(0)
             data_distance.append(data_distance[8])
-            
+            laser_msg = -500
+            laser_pub.publish(laser_msg)
             rospy.loginfo("激光测距仪没有返回有价值的信息")
-        laser_msg = data_distance[9]
-        
-        laser_pub.publish(laser_msg)
         
         rate.sleep()
        

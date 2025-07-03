@@ -13,10 +13,10 @@ import cv2
 import detector_new
 from geometry_msgs.msg import Quaternion
 
-data_pitch = [0,0,0,0,0,0,0,0,0,0]
-data_yaw = [0,0,0,0,0,0,0,0,0,0]
-data_roll = [0,0,0,0,0,0,0,0,0,0]
-data_distance =[0,0,0,0,0,0,0,0,0,0]
+data_pitch = [None]*10
+data_yaw = [None]*10
+data_roll = [None]*10
+data_distance =[None]*10
 
 def image_callback(msg):
     global p,y,r,dis
@@ -39,39 +39,40 @@ def image_callback(msg):
             
             data_distance.pop(0)
             data_distance.append(dis)
-           
             
+            posdata_msg.x = p
+            posdata_msg.y = y
+            posdata_msg.z = r
+            posdata_msg.w = dis
+            posdata_pub.publish(posdata_msg)
+            rospy.loginfo("%f,%f,%f,%f",p,y,r,dis)
 
             
         else:
             data_pitch.pop(0)
-            data_pitch.append(data_pitch[8])
-            
+            data_pitch.append(data_pitch[8])            
             data_yaw.pop(0)
-            data_yaw.append(data_yaw[8])
+            data_yaw.append(data_yaw[8]) 
                 
             data_roll.pop(0)
-            data_roll.append(data_roll[8])
+            data_roll.append(data_roll[8]) 
             
             data_distance.pop(0)
-            data_distance.append(data_distance[8])
+            data_distance.append(data_distance[8]) 
         
-        posdata_msg.x = data_pitch[9]
-        posdata_msg.y = data_yaw[9]
-        posdata_msg.z = data_roll[9]
-        posdata_msg.w = data_distance[9]
-        posdata_pub.publish(posdata_msg)
+            posdata_msg.x = -500
+            posdata_msg.y = -500
+            posdata_msg.z = -500
+            posdata_msg.w = -500
+            posdata_pub.publish(posdata_msg)
+            rospy.loginfo("没有检测到二维码")
         
         cv2.imshow('video', frame)
         cv2.waitKey(1)
-        rospy.loginfo("%f,%f,%f,%f",data_pitch[9],data_yaw[9],data_roll[9],data_distance[9])
+       
     except Exception as e:
         rospy.logerr(f"Image conversion error: {e}")
         return
-    
-    # 显示图像
-    #cv2.imshow("Camera View", cv_image)
-    #cv2.waitKey(1)  # 必要的窗口更新操作
 
 if __name__ == '__main__':
     # 初始化ROS节点

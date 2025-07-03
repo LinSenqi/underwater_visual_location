@@ -21,7 +21,7 @@ int main(int argc,char **argv)
  
   // 创建ROS中图像的发布者
   image_transport::ImageTransport it( n ); 
-  image_transport::Publisher pub_image = it.advertise( "camera", 1 );//将图像发布到话题，最多缓存一帧图像
+  image_transport::Publisher pub_image = it.advertise( "1", 1 );//将图像发布到话题，最多缓存一帧图像
  
  
   //cv_bridge功能包提供了ROS图像和OpenCV图像转换的接口，建立了一座桥梁
