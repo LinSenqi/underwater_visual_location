@@ -19,11 +19,11 @@ data_pos = [[-500,-500,-500]]*10
 
 def laser_callback(data):
     global laser_data
-    laser_data = data
+    laser_data = data.data
     
 def height_callback(data):
     global height_data
-    height_data = data
+    height_data = data.data
 
 def imu_callback(data):
     imu_data[0]=data.x
@@ -48,14 +48,14 @@ if __name__ == "__main__":
         if h != -500 and l != -500 and i != [-500]*4:
             
             localizer = position.UnderwaterLocalizer(pool_dimensions=(8.0, 4.0, 5.0))
-            position = localizer.update_position(l, h, i[:2])
+            pos = localizer.update_position(l, h, i[0:3])
             data_pos.pop(0)
-            data_pos.append(position)
-            pos_msg.x = position[0]
-            pos_msg.y = position[1]
-            pos_msg.z = position[2]
+            data_pos.append(pos)
+            pos_msg.x = pos[0]
+            pos_msg.y = pos[1]
+            pos_msg.z = pos[2]
             pos_pub.publish(pos_msg)
-            rospy.loginfo("%f,%f,%f",position[0],position[1],position[2])
+            rospy.loginfo("%f,%f,%f",pos[0],pos[1],pos[2])
         else:
             pos_msg.x = -500
             pos_msg.y = -500

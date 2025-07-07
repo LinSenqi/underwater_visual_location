@@ -27,7 +27,7 @@ def updateData(DeviceModel):
     # 获取当前时间戳
     global data_AngX,data_AngY,data_AngZ,data_AsX,data_time
     global ang_x,ang_y,ang_z,as_x
-    current_time = time.time()
+    
    
     # 获取设备的数据
     ang_x = DeviceModel.get(DeviceModel.addrLis[0], "AngX")
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     addrLis = [0x50]
     
     # 拿到设备模型 Get the device model
-    device = device_model.DeviceModel("测试设备1", "/dev/ttyUSB0", 9600, addrLis, updateData, 30)
+    device = device_model.DeviceModel("测试设备1", "/dev/ttyUSB1", 9600, addrLis, updateData, 20)
     
     
     # 开启设备 Turn on the device
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     rate = rospy.Rate(30)
     while not rospy.is_shutdown():
         ax,ay,az,asx = ang_x,ang_y,ang_z,as_x
-        if  (ax != None) and  (ay != None) and (az != None) and (asx != None):
+        if  not ((ax == None) or  (ay == None) or (az == None) or (asx == None)):
             data_AngX.pop(0)
             data_AngX.append(ax)
             

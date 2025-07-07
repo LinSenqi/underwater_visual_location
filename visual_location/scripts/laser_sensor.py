@@ -123,7 +123,7 @@ class LaserRangeFinder:
             self.connection = False
     
     def DataReceiveTH(self):
-         while True:
+         while self.loop == 1:
             if  (self.connection == True) :
                
                 try:

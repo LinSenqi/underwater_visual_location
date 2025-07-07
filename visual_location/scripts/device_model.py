@@ -5,7 +5,7 @@ import threading
 import time
 import serial
 from serial import SerialException
-
+import rospy
 
 # 串口配置 Serial Port Configuration
 class SerialConfig:
@@ -110,7 +110,7 @@ class DeviceModel:
         # 初始化设备数据字典 Initialize device data dictionary
         self.initial_angle_z = {}  # 存储每个ADDR的初始AngZ值
         self.is_initialized = {}   # 标记每个ADDR是否已初始化
-        self.serial_lock = threading.Lock() 
+       
         for addr in addrLis:
             self.deviceData[addr] = {}
 
@@ -137,7 +137,9 @@ class DeviceModel:
         # 从键值中获取数据，没有则返回None Obtaining data from key values
         if ADDR in self.deviceData:
             if key in self.deviceData[ADDR]:
+                rospy.loginfo("读取到有效数据")
                 return self.deviceData[ADDR][key]
+                
             else:
                 return None
         else:
@@ -183,14 +185,15 @@ class DeviceModel:
                     if tLen > 0:
                         data = self.serialPort.read(tLen)
                         self.onDataReceived(data)
+                        
                 except Exception as ex:
                     if self.loop:
-                        print(ex)
+                        rospy.loginfo("没有监听到数据")
             else:
                 time.sleep(0.1)
                 if self.loop:
                     print("串口未打开")
-                break
+                   
 
     # 关闭设备  close Device
     def closeDevice(self):
@@ -319,6 +322,7 @@ class DeviceModel:
     def readReg(self, ADDR, regAddr, regCount):
         # 从指令中获取起始寄存器 （处理回传数据需要用到） Get start register from instruction
         self.statReg = regAddr
+        
         # 封装读取指令并向串口发送数据 Encapsulate read instructions and send data to the serial port
         self.sendData(self.get_readBytes(ADDR, regAddr, regCount))
 
@@ -387,6 +391,7 @@ class DeviceModel:
         print("循环读取开始")
         while self.loop:
             for addr in self.addrLis:
+                
                 self.readReg(addr, 0x34, 15)
                 time.sleep(1/self.print_frequency)
         print("循环读取结束")
